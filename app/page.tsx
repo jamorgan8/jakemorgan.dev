@@ -15,7 +15,7 @@ const skills = ['SQL', 'Python', 'Teradata', 'SQL Server', 'GitHub Actions', 'At
 
 function ContactLinks({ compact = false }: { compact?: boolean }) {
   const items = [
-    { label: 'Resume', href: '/resume.pdf', primary: true },
+    { label: compact ? 'Resume' : 'View Resume', href: '/resume.pdf', primary: true },
     { label: 'LinkedIn', href: links.linkedin, external: true },
     { label: 'GitHub', href: links.github, external: true },
     { label: 'Email', href: links.email },
