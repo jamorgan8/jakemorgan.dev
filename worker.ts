@@ -163,7 +163,13 @@ async function handleResume(request: Request, env: Env) {
 
 const worker = {
   async fetch(request: Request, env: Env, context: ExecutionContext) {
-    const pathname = new URL(request.url).pathname;
+    const url = new URL(request.url);
+    if (url.hostname === 'www.jakemorgan.dev') {
+      url.hostname = 'jakemorgan.dev';
+      url.protocol = 'https:';
+      return Response.redirect(url.toString(), 308);
+    }
+    const pathname = url.pathname;
     if (pathname === '/resume-access') return handleGate(request, env);
     if (pathname === '/resume.pdf') return handleResume(request, env);
     return app.fetch(request, env, context);
