@@ -47,13 +47,6 @@ export default function Home() {
             <p className="skill-line">SQL <span>•</span> Python <span>•</span> Data Platforms <span>•</span> Automation</p>
             <ContactLinks />
           </div>
-          <div className="data-panel" aria-hidden="true">
-            <div className="panel-top"><span>pipeline_status</span><span>● live</span></div>
-            <div className="pipeline">
-              <div><span>01</span><strong>INGEST</strong><i /></div><div><span>02</span><strong>TRANSFORM</strong><i /></div><div><span>03</span><strong>VALIDATE</strong><i /></div><div><span>04</span><strong>DELIVER</strong><i /></div>
-            </div>
-            <div className="panel-bottom"><span>4 / 4 stages</span><span>quality checks passed</span></div>
-          </div>
         </section>
         <section className="section" aria-labelledby="impact-title">
           <div className="section-heading"><p className="section-index">01 / Impact</p><h2 id="impact-title">Selected impact</h2></div>
