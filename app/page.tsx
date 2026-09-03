@@ -1,8 +1,7 @@
 const links = {
   linkedin: 'https://www.linkedin.com/in/jakescottmorgan/',
   github: 'https://github.com/jamorgan8',
-  // PLACEHOLDER: replace with Jake's preferred public contact address.
-  email: 'mailto:you@example.com',
+  email: 'mailto:hello@jakemorgan.dev',
 };
 
 const impact = [

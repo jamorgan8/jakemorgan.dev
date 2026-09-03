@@ -22,14 +22,10 @@ For the custom domain, set `jakemorgan.dev` as the primary domain and attach `ww
 ## Content updates
 
 - **Resume:** Upload the real PDF as the private R2 object `resume.pdf` in the `resume_assets` bucket. Do not place it in `public/` or commit it to this public repository. Visitors are sent through `/resume-access`; after server-side Turnstile verification they receive a signed, five-minute, HTTP-only access cookie and can load `/resume.pdf`.
-- **Contact links:** LinkedIn and GitHub are configured in `app/page.tsx`. Replace the clearly marked email placeholder with Jake's preferred public address.
+- **Contact links:** LinkedIn, GitHub, and `hello@jakemorgan.dev` are configured in `app/page.tsx`.
 - **Accomplishments:** Edit the `impact` array in `app/page.tsx`.
 - **Headshot:** None is required. To add one later, place an optimized WebP image in `public/` and add it to the hero with descriptive alt text.
 - **QR attribution:** `?src=card` is intentionally accepted without redirecting, transmitting, or storing visitor data. The parameter remains available for future privacy-conscious first-party attribution.
-
-## Placeholders still required
-
-1. Email address
 
 ## Production checklist
 
