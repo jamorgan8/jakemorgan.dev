@@ -22,24 +22,19 @@ For the custom domain, set `jakemorgan.dev` as the primary domain and attach `ww
 ## Content updates
 
 - **Resume:** Upload the real PDF as the private R2 object `resume.pdf` in the `resume_assets` bucket. Do not place it in `public/` or commit it to this public repository. Visitors are sent through `/resume-access`; after server-side Turnstile verification they receive a signed, five-minute, HTTP-only access cookie and can load `/resume.pdf`.
-- **Contact links:** Replace the three clearly marked placeholder values in `app/page.tsx` for LinkedIn, GitHub, and email.
+- **Contact links:** LinkedIn and GitHub are configured in `app/page.tsx`. Replace the clearly marked email placeholder with Jake's preferred public address.
 - **Accomplishments:** Edit the `impact` array in `app/page.tsx`.
 - **Headshot:** None is required. To add one later, place an optimized WebP image in `public/` and add it to the hero with descriptive alt text.
 - **QR attribution:** `?src=card` is intentionally accepted without redirecting, transmitting, or storing visitor data. The parameter remains available for future privacy-conscious first-party attribution.
 
 ## Placeholders still required
 
-1. LinkedIn profile URL
-2. GitHub profile URL
-3. Email address
-4. A real resume PDF uploaded to the private R2 bucket as `resume.pdf`
-5. Production `TURNSTILE_SITE_KEY`, `TURNSTILE_HOSTNAMES`, and secret `TURNSTILE_SECRET`
+1. Email address
 
 ## Production checklist
 
-- Create a managed Turnstile widget for `jakemorgan.dev` and `www.jakemorgan.dev`.
-- Configure `TURNSTILE_SITE_KEY` and `TURNSTILE_HOSTNAMES` as runtime variables and `TURNSTILE_SECRET` as a secret. Never deploy the test credentials from `.env.example`.
-- Upload the resume to the bound private R2 bucket with the object name `resume.pdf`.
+- Keep the managed Turnstile widget and production runtime secrets configured for every deployed hostname. Never deploy the test credentials from `.env.example`.
+- Keep the resume in the bound private R2 bucket with the object name `resume.pdf`.
 - Connect the repository's `main` branch to the hosting project.
 - Add `jakemorgan.dev` and `www.jakemorgan.dev` as custom domains.
 - Confirm Cloudflare-managed HTTPS and the permanent `www` redirect.

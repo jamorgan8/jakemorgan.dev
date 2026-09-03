@@ -1,7 +1,7 @@
 const links = {
-  // PLACEHOLDER: replace these three values with Jake's real contact links.
-  linkedin: 'https://www.linkedin.com/in/your-profile',
-  github: 'https://github.com/your-username',
+  linkedin: 'https://www.linkedin.com/in/jakescottmorgan/',
+  github: 'https://github.com/jamorgan8',
+  // PLACEHOLDER: replace with Jake's preferred public contact address.
   email: 'mailto:you@example.com',
 };
 

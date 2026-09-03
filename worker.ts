@@ -6,6 +6,7 @@ interface Env {
   TURNSTILE_SITE_KEY?: string;
   TURNSTILE_SECRET?: string;
   TURNSTILE_HOSTNAMES?: string;
+  RESUME_UPLOAD_TOKEN?: string;
 }
 
 const COOKIE_NAME = 'resume_access';
@@ -86,6 +87,19 @@ async function signature(secret: string, expires: string) {
   return bytesToHex(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${COOKIE_NAME}:${expires}`)));
 }
 
+async function secretsMatch(expected: string, supplied: string) {
+  const encoder = new TextEncoder();
+  const [expectedHash, suppliedHash] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(expected)),
+    crypto.subtle.digest('SHA-256', encoder.encode(supplied)),
+  ]);
+  const expectedBytes = new Uint8Array(expectedHash);
+  const suppliedBytes = new Uint8Array(suppliedHash);
+  let difference = 0;
+  for (let index = 0; index < expectedBytes.length; index += 1) difference |= expectedBytes[index] ^ suppliedBytes[index];
+  return difference === 0;
+}
+
 async function hasValidAccess(request: Request, secret?: string) {
   if (!secret) return false;
   const value = parseCookie(request, COOKIE_NAME);
@@ -161,9 +175,45 @@ async function handleResume(request: Request, env: Env) {
   });
 }
 
+async function handleResumeUpload(request: Request, env: Env) {
+  if (!env.RESUME_UPLOAD_TOKEN) return new Response('Not found', { status: 404 });
+  if (request.method !== 'PUT') return new Response('Method not allowed', { status: 405, headers: { allow: 'PUT' } });
+
+  const authorization = request.headers.get('authorization') ?? '';
+  const suppliedToken = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
+  if (!suppliedToken || !(await secretsMatch(env.RESUME_UPLOAD_TOKEN, suppliedToken))) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  const declaredLength = Number(request.headers.get('content-length') ?? '0');
+  if (!Number.isFinite(declaredLength) || declaredLength <= 0 || declaredLength > 5 * 1024 * 1024) {
+    return new Response('Invalid file size', { status: 413 });
+  }
+  if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/pdf') {
+    return new Response('PDF required', { status: 415 });
+  }
+
+  const bytes = await request.arrayBuffer();
+  const signatureBytes = new Uint8Array(bytes.slice(0, 5));
+  if (bytes.byteLength !== declaredLength || new TextDecoder().decode(signatureBytes) !== '%PDF-') {
+    return new Response('Invalid PDF', { status: 400 });
+  }
+
+  await env.resume_assets.put('resume.pdf', bytes, {
+    httpMetadata: {
+      contentType: 'application/pdf',
+      contentDisposition: 'inline; filename="Jake-Morgan-Resume.pdf"',
+    },
+  });
+  const stored = await env.resume_assets.head('resume.pdf');
+  if (!stored || stored.size !== bytes.byteLength) return new Response('Upload verification failed', { status: 500 });
+  return Response.json({ ok: true, size: stored.size, etag: stored.etag }, { status: 201, headers: { 'cache-control': 'no-store' } });
+}
+
 const worker = {
   async fetch(request: Request, env: Env, context: ExecutionContext) {
     const pathname = new URL(request.url).pathname;
+    if (pathname === '/internal/resume-upload') return handleResumeUpload(request, env);
     if (pathname === '/resume-access') return handleGate(request, env);
     if (pathname === '/resume.pdf') return handleResume(request, env);
     return app.fetch(request, env, context);
