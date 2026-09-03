@@ -4,7 +4,8 @@ interface Env {
   ASSETS: Fetcher;
   resume_assets: R2Bucket;
   TURNSTILE_SITE_KEY?: string;
-  TURNSTILE_SECRET_KEY?: string;
+  TURNSTILE_SECRET?: string;
+  TURNSTILE_HOSTNAMES?: string;
 }
 
 const COOKIE_NAME = 'resume_access';
@@ -98,17 +99,24 @@ async function hasValidAccess(request: Request, secret?: string) {
   return difference === 0;
 }
 
-async function verifyTurnstile(request: Request, secret: string, token: string) {
+async function verifyTurnstile(request: Request, secret: string, token: string, hostnameList: string) {
+  const expectedHostnames = new Set(
+    hostnameList
+      .split(',')
+      .map((hostname) => hostname.trim())
+      .filter(Boolean),
+  );
+  if (token.length === 0 || token.length > 2048 || expectedHostnames.size === 0) return false;
   try {
     const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      signal: AbortSignal.timeout(10_000),
       body: new URLSearchParams({ secret, response: token, remoteip: request.headers.get('cf-connecting-ip') ?? '' }),
     });
     if (!response.ok) return false;
     const result = await response.json() as { success?: boolean; hostname?: string; action?: string };
-    const requestHostname = new URL(request.url).hostname;
-    return result.success === true && result.hostname === requestHostname && result.action === 'resume_download';
+    return result.success === true && Boolean(result.hostname && expectedHostnames.has(result.hostname)) && result.action === 'resume_download';
   } catch {
     return false;
   }
@@ -119,14 +127,14 @@ async function handleGate(request: Request, env: Env) {
     return htmlResponse(gatePage(env.TURNSTILE_SITE_KEY, new URL(request.url).searchParams.get('error') ?? undefined));
   }
   if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: { allow: 'GET, POST' } });
-  if (!env.TURNSTILE_SITE_KEY || !env.TURNSTILE_SECRET_KEY) return htmlResponse(gatePage(undefined, 'unavailable'), 503);
+  if (!env.TURNSTILE_SITE_KEY || !env.TURNSTILE_SECRET || !env.TURNSTILE_HOSTNAMES) return htmlResponse(gatePage(undefined, 'unavailable'), 503);
   const form = await request.formData();
   const token = form.get('cf-turnstile-response');
-  if (typeof token !== 'string' || !(await verifyTurnstile(request, env.TURNSTILE_SECRET_KEY, token))) {
+  if (typeof token !== 'string' || !(await verifyTurnstile(request, env.TURNSTILE_SECRET, token, env.TURNSTILE_HOSTNAMES))) {
     return Response.redirect(new URL('/resume-access?error=verification', request.url), 303);
   }
   const expires = String(Math.floor(Date.now() / 1000) + COOKIE_LIFETIME_SECONDS);
-  const signed = await signature(env.TURNSTILE_SECRET_KEY, expires);
+  const signed = await signature(env.TURNSTILE_SECRET, expires);
   return new Response(null, {
     status: 303,
     headers: {
@@ -138,7 +146,7 @@ async function handleGate(request: Request, env: Env) {
 }
 
 async function handleResume(request: Request, env: Env) {
-  if (!(await hasValidAccess(request, env.TURNSTILE_SECRET_KEY))) return Response.redirect(new URL('/resume-access', request.url), 302);
+  if (!(await hasValidAccess(request, env.TURNSTILE_SECRET))) return Response.redirect(new URL('/resume-access', request.url), 302);
   const resume = await env.resume_assets?.get('resume.pdf');
   if (!resume) return Response.redirect(new URL('/resume-access?error=unavailable', request.url), 302);
   return new Response(resume.body, {

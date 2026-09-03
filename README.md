@@ -33,12 +33,12 @@ For the custom domain, set `jakemorgan.dev` as the primary domain and attach `ww
 2. GitHub profile URL
 3. Email address
 4. A real resume PDF uploaded to the private R2 bucket as `resume.pdf`
-5. Production `TURNSTILE_SITE_KEY` and secret `TURNSTILE_SECRET_KEY`
+5. Production `TURNSTILE_SITE_KEY`, `TURNSTILE_HOSTNAMES`, and secret `TURNSTILE_SECRET`
 
 ## Production checklist
 
 - Create a managed Turnstile widget for `jakemorgan.dev` and `www.jakemorgan.dev`.
-- Configure `TURNSTILE_SITE_KEY` as a runtime variable and `TURNSTILE_SECRET_KEY` as a secret. Never deploy the test credentials from `.env.example`.
+- Configure `TURNSTILE_SITE_KEY` and `TURNSTILE_HOSTNAMES` as runtime variables and `TURNSTILE_SECRET` as a secret. Never deploy the test credentials from `.env.example`.
 - Upload the resume to the bound private R2 bucket with the object name `resume.pdf`.
 - Connect the repository's `main` branch to the hosting project.
 - Add `jakemorgan.dev` and `www.jakemorgan.dev` as custom domains.
