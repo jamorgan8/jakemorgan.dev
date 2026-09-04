@@ -4,10 +4,10 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL('https://jakemorgan.dev'),
   title: 'Jake Morgan | Data Engineer',
-  description: 'Jake Morgan is a data engineer specializing in SQL, Python, enterprise data platforms, automation, and data quality.',
+  description: 'Jake Morgan is a Nashville-based data engineer and technical leader specializing in enterprise data platforms, automation, data quality, and agentic development.',
   alternates: { canonical: '/' },
-  openGraph: { type: 'website', url: 'https://jakemorgan.dev/', title: 'Jake Morgan | Data Engineer', description: 'Data engineer building dependable enterprise data systems and operational automation.', siteName: 'Jake Morgan' },
-  twitter: { card: 'summary', title: 'Jake Morgan | Data Engineer', description: 'Data engineer building dependable enterprise data systems and operational automation.' },
+  openGraph: { type: 'website', url: 'https://jakemorgan.dev/', title: 'Jake Morgan | Data Engineer', description: 'Nashville-based data engineer and technical leader building dependable enterprise data systems and automation.', siteName: 'Jake Morgan' },
+  twitter: { card: 'summary', title: 'Jake Morgan | Data Engineer', description: 'Nashville-based data engineer and technical leader building dependable enterprise data systems and automation.' },
   icons: { icon: '/favicon.svg' },
 };
 
