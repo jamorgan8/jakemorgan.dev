@@ -11,6 +11,20 @@ interface Env {
 const COOKIE_NAME = 'resume_access';
 const COOKIE_LIFETIME_SECONDS = 5 * 60;
 
+function withSecurityHeaders(response: Response) {
+  const headers = new Headers(response.headers);
+  headers.set('strict-transport-security', 'max-age=31536000; includeSubDomains');
+  headers.set('referrer-policy', 'no-referrer');
+  headers.set('x-content-type-options', 'nosniff');
+  headers.set('x-frame-options', 'DENY');
+  headers.set('permissions-policy', 'camera=(), microphone=(), geolocation=()');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function escapeHtml(value: string) {
   return value.replace(/[&<>'"]/g, (character) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
@@ -167,12 +181,12 @@ const worker = {
     if (url.hostname === 'www.jakemorgan.dev') {
       url.hostname = 'jakemorgan.dev';
       url.protocol = 'https:';
-      return Response.redirect(url.toString(), 308);
+      return withSecurityHeaders(Response.redirect(url.toString(), 308));
     }
     const pathname = url.pathname;
-    if (pathname === '/resume-access') return handleGate(request, env);
-    if (pathname === '/resume.pdf') return handleResume(request, env);
-    return app.fetch(request, env, context);
+    if (pathname === '/resume-access') return withSecurityHeaders(await handleGate(request, env));
+    if (pathname === '/resume.pdf') return withSecurityHeaders(await handleResume(request, env));
+    return withSecurityHeaders(await app.fetch(request, env, context));
   },
 };
 

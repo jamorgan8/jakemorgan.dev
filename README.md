@@ -1,37 +1,63 @@
-# Jake Morgan — career landing page
+# Jake Morgan — career portfolio
 
-A mobile-first career landing page for recruiters and hiring managers arriving from `jakemorgan.dev` or the business-card QR URL `https://jakemorgan.dev/?src=card`.
+A responsive career portfolio for recruiters, hiring managers, and professional contacts. The production site is [jakemorgan.dev](https://jakemorgan.dev); `https://jakemorgan.dev/?src=card` is the business-card QR destination.
+
+## What is included
+
+- Hero, technical skills, career highlights, professional experience, personal interests, and contact sections
+- Two optimized WebP photos supplied by Jake and stored in `public/`
+- A bot-gated resume served from private object storage rather than the public repository
+- Responsive styling, reduced-motion support, semantic HTML, and keyboard-visible focus states
 
 ## Architecture
 
-- Vinext with a Cloudflare Worker entry point
+- Vinext/React application with a Cloudflare Worker entry point
+- OpenAI Sites hosting, configured by `.openai/hosting.json`
 - Cloudflare Turnstile verification and a private R2-backed resume
-- No database, user accounts, analytics, or visitor storage
-- System fonts, minimal client-side code, and no third-party assets
+- No application database, user accounts, analytics, or visitor-data persistence
+- Site-wide transport, framing, MIME-sniffing, referrer, and browser-permission security headers
 
 ## Local development
 
-Install dependencies with `npm install`, then run `npm run dev`. Create a production export with `npm run build`.
+Use Node.js 22.13 or newer.
+
+```bash
+npm install
+npm run dev
+```
+
+Run the quality checks before publishing:
+
+```bash
+npm run lint
+npm run build
+```
+
+Local Turnstile development uses the public test credentials documented in `.env.example`. Copy them into an ignored `.env.local` file; never put production credentials in a committed file or in a `VITE_`-prefixed variable.
 
 ## Deployment
 
-The production build emits a Cloudflare Worker in `dist/server/`. Configure the hosting project to deploy from the `main` branch. HTTPS should be Cloudflare-managed.
+The production build emits the Worker bundle in `dist/server/`. Publishing is handled through OpenAI Sites using the project in `.openai/hosting.json`. The custom domains are `jakemorgan.dev` and `www.jakemorgan.dev`; the Worker permanently redirects `www` to the HTTPS apex domain.
 
-For the custom domain, set `jakemorgan.dev` as the primary domain and attach `www.jakemorgan.dev`. The included `public/_redirects` rule permanently redirects `www` traffic to the apex domain. Confirm the redirect after DNS is active.
+Production must provide these runtime values:
+
+- `TURNSTILE_SITE_KEY`
+- `TURNSTILE_SECRET`
+- `TURNSTILE_HOSTNAMES` as a comma-separated allowlist
+- The private R2 binding `resume_assets`, containing `resume.pdf`
 
 ## Content updates
 
-- **Resume:** Upload the real PDF as the private R2 object `resume.pdf` in the `resume_assets` bucket. Do not place it in `public/` or commit it to this public repository. Visitors are sent through `/resume-access`; after server-side Turnstile verification they receive a signed, five-minute, HTTP-only access cookie and can load `/resume.pdf`.
-- **Contact links:** LinkedIn, GitHub, and `hello@jakemorgan.dev` are configured in `app/page.tsx`.
-- **Accomplishments:** Edit the `impact` array in `app/page.tsx`.
-- **Headshot:** None is required. To add one later, place an optimized WebP image in `public/` and add it to the hero with descriptive alt text.
-- **QR attribution:** `?src=card` is intentionally accepted without redirecting, transmitting, or storing visitor data. The parameter remains available for future privacy-conscious first-party attribution.
+- **Page copy and links:** Edit `app/page.tsx`. The Career Highlights content is in the `impact` array and professional roles are in `experience`.
+- **Styling:** Edit `app/globals.css`.
+- **Personal photos:** Replace the optimized WebP files in `public/`, preserve meaningful alt text, and strip location/camera metadata before committing replacements.
+- **Resume:** Upload the PDF as the private R2 object `resume.pdf`. Never add the resume PDF to `public/` or commit it to this repository. Visitors pass `/resume-access`, complete server-side Turnstile verification, and receive a signed, five-minute, `HttpOnly`, `Secure`, `SameSite=Strict` cookie scoped to `/resume.pdf`.
+- **QR attribution:** `?src=card` remains available for future privacy-conscious, first-party attribution, but is not currently transmitted or stored by the application.
 
-## Production checklist
+## Security notes
 
-- Keep the managed Turnstile widget and production runtime secrets configured for every deployed hostname. Never deploy the test credentials from `.env.example`.
-- Keep the resume in the bound private R2 bucket with the object name `resume.pdf`.
-- Connect the repository's `main` branch to the hosting project.
-- Add `jakemorgan.dev` and `www.jakemorgan.dev` as custom domains.
-- Confirm Cloudflare-managed HTTPS and the permanent `www` redirect.
-- Replace all four placeholders above before printing the QR code.
+- Secrets belong in the hosting environment or ignored local environment files. `.gitignore` also excludes common private-key, credential, and local Worker secret formats.
+- The example Turnstile values are Cloudflare's public test credentials and must never be used in production.
+- The main page does not use a restrictive Content Security Policy because the current React/Vinext runtime emits inline bootstrap scripts. The resume gate has a route-specific allowlist CSP.
+- The site accepts no file uploads and processes no visitor-supplied images. Its transitive `image-size` package therefore only sees trusted repository assets during the current build/runtime flow.
+- Public portfolio copy, contact links, and personal photos are intentionally public; review them as public information before publishing changes.
