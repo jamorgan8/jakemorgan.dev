@@ -9,13 +9,13 @@ const links = {
 
 const impact = [
   {
-    metric: '2025',
-    title: 'Data Management & Business Intelligence Rising Star',
+    metric: 'Data Management & Business Intelligence Rising Star',
+    title: '2025',
     detail: 'Recognized for technical impact in data engineering and process optimization.',
   },
   {
-    metric: '26 tables',
-    title: 'Definitive Health pipeline',
+    metric: 'Definitive Health pipeline',
+    title: '26 tables',
     detail: 'Designed and built a monthly SFTP pipeline that ingests millions of records.',
   },
   {
