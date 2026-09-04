@@ -1,5 +1,4 @@
-import Image from 'next/image';
-import Link from 'next/link';
+/* oxlint-disable next/no-html-link-for-pages, next/no-img-element */
 
 const links = {
   linkedin: 'https://www.linkedin.com/in/jakescottmorgan/',
@@ -72,7 +71,7 @@ const roles = [
 function HeroActions() {
   return (
     <div className="hero-actions">
-      <Link className="button button-primary" href="/resume-access">View Resume</Link>
+      <a className="button button-primary" href="/resume-access">View Resume</a>
       <a className="button" href={links.email}>Email Me</a>
       <a className="text-link" href={links.linkedin} target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
       <a className="text-link" href={links.github} target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
@@ -143,7 +142,7 @@ export default function Home() {
         <section className="section" id="experience" aria-labelledby="experience-title">
           <div className="experience-heading">
             <h2 id="experience-title">Professional Experience</h2>
-            <Link className="text-link" href="/resume-access">View Full Résumé <span aria-hidden="true">→</span></Link>
+            <a className="text-link" href="/resume-access">View Full Résumé <span aria-hidden="true">→</span></a>
           </div>
           <div className="timeline">
             {roles.map((role) => (
@@ -166,8 +165,8 @@ export default function Home() {
             <p>Closer to home, I enjoy lifting weights, fly fishing, playing video games and Warhammer, and tinkering with technology.</p>
           </div>
           <div className="personal-gallery">
-            <figure className="photo photo-travel"><Image src="/jake-jocelyn-camden.webp" width={1200} height={1600} sizes="(max-width: 768px) 100vw, 32vw" unoptimized alt="Jake and Jocelyn overlooking Penobscot Bay in Camden, Maine." /></figure>
-            <figure className="photo photo-dogs"><Image src="/mark-and-gary.webp" width={1600} height={1200} sizes="(max-width: 768px) 100vw, 28vw" unoptimized alt="Jake’s border collies, Mark and Gary." /></figure>
+            <figure className="photo photo-travel"><img src="/jake-jocelyn-camden.webp" width="1200" height="1600" loading="lazy" decoding="async" alt="Jake and Jocelyn overlooking Penobscot Bay in Camden, Maine." /></figure>
+            <figure className="photo photo-dogs"><img src="/mark-and-gary.webp" width="1600" height="1200" loading="lazy" decoding="async" alt="Jake’s border collies, Mark and Gary." /></figure>
           </div>
         </section>
 
@@ -178,7 +177,7 @@ export default function Home() {
             <div className="contact-actions">
               <a className="button button-light" href={links.email}>Email Me</a>
               <a href={links.linkedin} target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
-              <Link href="/resume-access">View Resume <span aria-hidden="true">→</span></Link>
+              <a href="/resume-access">View Resume <span aria-hidden="true">→</span></a>
             </div>
           </div>
         </section>
