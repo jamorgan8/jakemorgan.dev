@@ -19,9 +19,9 @@ const impact = [
     detail: 'Designed and built a monthly SFTP pipeline that ingests millions of records.',
   },
   {
-    metric: '10 tables',
-    title: 'Enterprise data quality',
-    detail: 'Led Ataccama ONE adoption and established a standardized 1-2 week deployment lifecycle.',
+    metric: 'Ataccama ONE',
+    title: 'Data quality leadership',
+    detail: 'Led platform adoption, onboarded 10 enterprise tables, and established a standardized 1-2 week deployment lifecycle.',
   },
 ];
 
@@ -87,12 +87,12 @@ export default function Home() {
         <a className="wordmark" href="#top" aria-label="Jake Morgan, home"><span aria-hidden="true">JM</span>Jake Morgan</a>
         <nav className="site-nav" aria-label="Main navigation">
           <a href="#background">Background</a>
-          <a href="#impact">Impact</a>
+          <a href="#impact">Highlights</a>
           <a href="#skills">Skills</a>
           <a href="#experience">Experience</a>
           <a href="#beyond-work">Beyond Work</a>
         </nav>
-        <a className="availability" href={links.email}><span aria-hidden="true" /><span className="availability-long">Open to data engineering roles</span><span className="availability-short">Open to roles</span></a>
+        <a className="availability" href={links.email}><span aria-hidden="true" /><span className="availability-long">Open to new opportunities</span><span className="availability-short">Open to opportunities</span></a>
       </header>
 
       <main id="top">
@@ -115,7 +115,7 @@ export default function Home() {
         </section>
 
         <section className="section" id="impact" aria-labelledby="impact-title">
-          <h2 id="impact-title">Selected Impact</h2>
+          <h2 id="impact-title">Career Highlights</h2>
           <div className="impact-grid">
             {impact.map((item, index) => (
               <article className="impact-card" key={item.title}>
